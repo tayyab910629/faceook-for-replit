@@ -202,22 +202,72 @@ class FacebookCommentBot:
             logger.info(f"Comment: {comment_text[:60]}...")
             logger.info(f"{'='*60}")
             
-            # Find and click Reply button
-            reply_btn = elem.locator("//div[@role='button' and contains(text(), 'Reply')]").first
-            if not reply_btn or reply_btn.count() == 0:
-                logger.warning(f"⚠️ No Reply button found for {author}")
-                return False
-            
             elem.scroll_into_view_if_needed()
             time.sleep(1)
+            
+            # Try multiple selectors for Reply button
+            reply_btn = None
+            selectors = [
+                "//span[contains(text(), 'Reply')]/..",
+                "//div[@role='button' and contains(., 'Reply')]",
+                "//span[text()='Reply']",
+                "//div[contains(@class, 'x1i10hfl') and contains(., 'Reply')]",
+            ]
+            
+            for selector in selectors:
+                try:
+                    btn = elem.locator(selector).first
+                    if btn and btn.count() > 0:
+                        reply_btn = btn
+                        logger.debug(f"Found Reply button with selector: {selector}")
+                        break
+                except:
+                    continue
+            
+            if not reply_btn:
+                # Try hovering over comment to reveal actions
+                elem.hover()
+                time.sleep(1)
+                for selector in selectors:
+                    try:
+                        btn = elem.locator(selector).first
+                        if btn and btn.count() > 0:
+                            reply_btn = btn
+                            logger.debug(f"Found Reply button (after hover) with selector: {selector}")
+                            break
+                    except:
+                        continue
+            
+            if not reply_btn:
+                logger.warning(f"⚠️ No Reply button found for {author}")
+                return False
             
             logger.debug("Clicking Reply button...")
             reply_btn.click(timeout=5000)
             time.sleep(2)
             
-            # Find reply text box
-            reply_box = self.page.locator("p[dir='auto'][contenteditable='true']").first
-            if not reply_box or reply_box.count() == 0:
+            # Find reply text box with multiple fallback selectors
+            reply_box = None
+            box_selectors = [
+                "p[dir='auto'][contenteditable='true']",
+                "div[role='textbox'][contenteditable='true']",
+                "div[contenteditable='true'][data-testid]",
+                "div[contenteditable='true']",
+            ]
+            
+            for selector in box_selectors:
+                try:
+                    boxes = self.page.locator(selector).all()
+                    if boxes:
+                        # Take the last one (most recent/active)
+                        reply_box = boxes[-1]
+                        if reply_box.is_visible():
+                            logger.debug(f"Found reply box with selector: {selector}")
+                            break
+                except:
+                    continue
+            
+            if not reply_box:
                 logger.warning("⚠️ Reply box not found")
                 return False
             
@@ -225,19 +275,33 @@ class FacebookCommentBot:
             reply_text = self.generate_reply(comment_text)
             reply_box.click()
             time.sleep(0.5)
-            reply_box.type(reply_text, delay=50)
+            reply_box.type(reply_text, delay=30)
             time.sleep(1)
             
-            # Find and click Send button
-            send_btn = self.page.locator("//div[@role='button' and @aria-label='Comment']").first
-            if send_btn and send_btn.count() > 0:
-                logger.debug("Clicking Send button...")
-                send_btn.click(timeout=5000)
-            else:
-                # Try pressing Enter
-                reply_box.press('Enter')
+            # Find and click Send button with multiple strategies
+            sent = False
             
-            time.sleep(2)
+            # Strategy 1: Try aria-label
+            send_btn = self.page.locator("//div[@aria-label='Comment' or @aria-label='Post']").first
+            if send_btn and send_btn.count() > 0:
+                logger.debug("Clicking Send button (aria-label)...")
+                send_btn.click(timeout=5000)
+                sent = True
+                time.sleep(2)
+            
+            # Strategy 2: Try keyboard shortcut
+            if not sent:
+                logger.debug("Trying Ctrl+Enter to send...")
+                reply_box.press('Control+Enter')
+                time.sleep(2)
+                sent = True
+            
+            # Strategy 3: Try just Enter
+            if not sent:
+                logger.debug("Trying Enter to send...")
+                reply_box.press('Enter')
+                time.sleep(2)
+                sent = True
             
             # Record in database
             self.db.add_processed_comment(
