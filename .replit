@@ -28,3 +28,16 @@ args = "python cmt.py"
 
 [workflows.workflow.metadata]
 outputType = "console"
+
+[userenv]
+
+[userenv.shared]
+POST_URL = "https://www.facebook.com/groups/1322960605591464/posts/1323015455585979/"
+OPENAI_PROMPT = "Generate a friendly, specific, and engaging Facebook comment."
+OPENAI_MODEL = "gpt-4o-mini"
+FB_OUR_NAME = "H Tahir"
+SUPABASE_URL = "https://qtdffrnzkfjytqbjdvvd.supabase.co"
+SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF0ZGZmcm56a2ZqeXRxYmpkdnZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIzNDM5MzAsImV4cCI6MjA3NzkxOTkzMH0.2r6aOhHmf3y1whrwAkULmBWkFE-eb6Mf4M-iAJikyLk"
+HEADLESS = "false"
+SCAN_INTERVAL = "30"
+MAX_REPLIES_PER_USER = "1"
