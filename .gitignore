@@ -1,0 +1,74 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+logs/
+*.log
+
+# Playwright
+playwright_data/
+
+# Chrome
+chrome_data/
+
+# Facebook user data
+facebook_user_data/
+
+# Installer scripts
+install.bat
+install.ps1
+run_bot_background.ps1
+run_bot.ps1
+setup_scheduled_task.ps1
+setup_service.ps1
+
+# Ignore notebooks
+*.ipynb
+
+# Database files (if using local SQLite - not applicable for Supabase)
+*.db
+*.sqlite
+*.sqlite3
+
+# Temporary Files
+*.tmp
+*.bak
+*.swp
+*~
+
+# Old Fix Scripts (already removed)
+clean_*.py
+fix_*.py
+complete_fix.py
+final_quote_fix.py
+
+# OS Files
+.DS_Store
+Thumbs.db
+desktop.ini
