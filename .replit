@@ -1,0 +1,7 @@
+modules = ["python-3.11"]
+[agent]
+expertMode = true
+
+[nix]
+channel = "stable-25_05"
+packages = ["gitFull", "playwright-driver", "xorg.libxcb", "xorg.libX11", "xorg.libXcomposite", "xorg.libXdamage", "xorg.libXfixes", "xorg.libXrandr", "mesa", "nspr", "nss", "dbus", "atk", "cups", "libxkbcommon", "at-spi2-atk", "cairo", "pango", "alsa-lib"]
